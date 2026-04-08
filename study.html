@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Learning App</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f4f6f8;
+    }
+
+    .screen {
+      display: none;
+      padding: 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    input, button {
+      margin: 8px;
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: white;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete {
+      background: red;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- DASHBOARD -->
+<div id="home" class="screen active">
+  <h2>📚 Dashboard</h2>
+  <button onclick="showScreen('add')">Add Study Record</button><br>
+  <button onclick="showScreen('view')">View Records</button>
+</div>
+
+<!-- ADD RECORD -->
+<div id="add" class="screen">
+  <h2>Add Study Record</h2>
+
+  <input id="subject" placeholder="Subject"><br>
+  <input id="topic" placeholder="Topic"><br>
+  <input id="time" placeholder="Time (mins)"><br>
+  <input id="notes" placeholder="Notes"><br>
+
+  <button onclick="saveRecord()">Save</button><br>
+  <button onclick="showScreen('home')">Back</button>
+</div>
+
+<!-- VIEW RECORDS -->
+<div id="view" class="screen">
+  <h2>Your Records</h2>
+
+  <ul id="list"></ul>
+
+  <button class="delete" onclick="deleteRecord()">Delete Selected</button><br>
+  <button onclick="showScreen('home')">Back</button>
+</div>
+
+<script>
+let selectedKey = "";
+
+// Switch screens
+function showScreen(screenId) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(screenId).classList.add("active");
+
+  if (screenId === "view") {
+    loadRecords();
+  }
+}
+
+// Save data
+function saveRecord() {
+  let subject = document.getElementById("subject").value;
+  let topic = document.getElementById("topic").value;
+  let time = document.getElementById("time").value;
+  let notes = document.getElementById("notes").value;
+
+  let value = topic + ", " + time + " mins, " + notes;
+
+  localStorage.setItem(subject, value);
+
+  alert("Saved!");
+}
+
+// Load records
+function loadRecords() {
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    let value = localStorage.getItem(key);
+
+    let li = document.createElement("li");
+    li.textContent = key + ": " + value;
+
+    li.onclick = function () {
+      selectedKey = key;
+      alert("Selected: " + key);
+    };
+
+    list.appendChild(li);
+  }
+}
+
+// Delete selected record
+function deleteRecord() {
+  if (selectedKey === "") {
+    alert("Select a record first!");
+    return;
+  }
+
+  localStorage.removeItem(selectedKey);
+  selectedKey = "";
+
+  alert("Deleted!");
+  loadRecords();
+}
+</script>
+
+</body>
+</html>
